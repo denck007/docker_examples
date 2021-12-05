@@ -1,0 +1,40 @@
+version: "3.3"
+
+services:
+  nginx:
+    image: nginx:1.21.4
+    volumes:
+      - ./nginx_data/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx_data/error.log:/etc/nginx/error_log.log
+      - ./nginx_data/cache/:/etc/nginx/cache
+    ports:
+      - 1337:80
+    depends_on:
+      - app1
+      - app2
+      - app_main
+
+  app_main:
+    build: ./app
+    image: proxy_test_app
+    expose:
+      - 8000
+    volumes:
+      - ./app:/app
+    command: [ "python", "/app/app_main.py" ]
+  app1:
+    image: proxy_test_app
+    build: ./app
+    expose:
+      - 8000
+    volumes:
+      - ./app:/app
+    command: [ "python", "/app/app1.py" ]
+  app2:
+    image: proxy_test_app
+    build: ./app
+    expose:
+      - 8000
+    volumes:
+      - ./app:/app
+    command: [ "python", "/app/app2.py" ]
